@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <!--Lazy OpenCV property sheet template for PREBUILT OpenCV libraries WITHOUT GPU support-->
+    <!--Calum Blair-->
+    <!--March 2013-->
+	<!--Version 1.0-->
+    <!--See guide at http://home.eps.hw.ac.uk/~cgb7/opencv -->
+	<!--props to this guy: http://stackoverflow.com/questions/3502530/ -->
+	<!--This relies on the %OpenCV_DIR% environment variable being set to <opencv_install_location>\build-->
+	<!--AND the OpenCV DLLS being present in the system path-->	
+	<!--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+    <!--set opencv version here-->
+    <OpenCvVersion>3411</OpenCvVersion>
+    <!--set Boost version here if required-->
+    <BoostVersion>1_49</BoostVersion>
+    <!--debug suffix for opencv - dont change this-->
+    <DebugSuffix Condition="'$(Configuration)'=='Debug'">d</DebugSuffix>
+    <DebugSuffix Condition="'$(Configuration)'!='Debug'">
+    </DebugSuffix>
+    <!--debug suffix for Boost libraries - dont change this-->
+    <BoostDebugSuffix Condition="'$(Configuration)'=='Debug'">-gd</BoostDebugSuffix>
+    <BoostDebugSuffix Condition="'$(Configuration)'!='Debug'">
+    </BoostDebugSuffix>
+	<!--try and get Visual Studio version here. Use 2010 libs for VS2012-->
+	<VCShortVersion Condition="'$(PlatformToolset)'=='v142'">vc15</VCShortVersion>
+	<VCShortVersion Condition="'$(PlatformToolset)'=='v141'">vc14</VCShortVersion>
+  </PropertyGroup>
+  <!--Contains definitions for OpenCV DLLs, Libraries and headers and boost headers and libraries-->
+  <!--Look in GPU folders first-->
+  <PropertyGroup>
+    <ExecutablePath>$(OpenCV_DIR)\$(PlatformShortName)\$(VCShortVersion)\bin;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludePath>$(OpenCV_DIR)\include;$(boost_path);$(CUDA_PATH)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LibraryPath>$(OpenCV_DIR)\$(PlatformShortName)\$(VCShortVersion)\lib;$(boost_path)\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemDefinitionGroup Label="UserDefs" />
+  <!--set compute capability of your CUDA GPU here-->
+  <!--eg this compiles for CC1.2 and CC2.1(2.0) cards-->
+  <ItemDefinitionGroup>
+    <CudaCompile>
+      <PtxAsOptionV>false</PtxAsOptionV>
+      <CodeGeneration>compute_12,sm_12; compute_20,sm_21</CodeGeneration>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <!--Set libraries to link against here. follow the format given for extra OpenCV or boost libraries-->
+	  <!-- example boost libraries: (copy and paste below)
+	  libboost_filesystem-vc$(PlatformToolsetVersion)-mt$(BoostDebugSuffix)-$(BoostVersion).lib;
+libboost_exception-vc$(PlatformToolsetVersion)-mt$(BoostDebugSuffix)-$(BoostVersion).lib;
+libboost_system-vc$(PlatformToolsetVersion)-mt$(BoostDebugSuffix)-$(BoostVersion).lib;
+-->
+      <AdditionalDependencies>
+opencv_world$(OpenCvVersion)$(DebugSuffix).lib;
+%(AdditionalDependencies)
+		</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
